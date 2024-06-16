@@ -1,14 +1,26 @@
 import { ChangeEvent } from "react";
 import { SignupInput } from "@amitrochates/blog-common";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { BACKEND_URL } from "../config";
+import axios from "axios";
 export const Auth = ({type}:{type: "signup" | "signin"}) => {
 const [postInputs, setPostInputs] = useState<SignupInput>({
     email:"",
     password:"",
     name:""
 })
-
+const navigate = useNavigate();
+async function sendRequest () {
+    try{
+        const response = await axios.post(`${BACKEND_URL}/api/user/${type === "signup" ? "signup" : "signin"}`, postInputs);
+        const jwt = response.data;
+        localStorage.setItem("token", jwt);
+        navigate("/blogs");
+    }catch(e){
+        console.log(e);
+    }
+}
     return <div className="h-screen flex justify-center flex-col">
             <div className="flex justify-center">
                 <div className="">
@@ -20,11 +32,13 @@ const [postInputs, setPostInputs] = useState<SignupInput>({
                         <Link className="pl-2 underline" to={ type === "signup" ? "/signin" : "/signup"} >{type === "signup" ? "Signin" : "Signup"}</Link>
                         </div>
                         <div className="pt-8">
-                        <LabelledInput label = "Name" placeholder="Manoj" onChange={(e) => {
+                            {type === "signup" ? <LabelledInput label = "Name" placeholder="Manoj" onChange={(e) => {
                             setPostInputs({
                                 ...postInputs, name: e.target.value
                             })
-                        }}/>
+                        }}/> :
+                        null }
+                        
                         <LabelledInput label = "Email" placeholder="abc@gmail.com" onChange={(e) => {
                             setPostInputs({
                                 ...postInputs, email: e.target.value
@@ -35,9 +49,11 @@ const [postInputs, setPostInputs] = useState<SignupInput>({
                                 ...postInputs, password: e.target.value
                             })
                         }}/>
-                        <button type="button" className="w-full text-white bg-[#050708] hover:bg-[#050708]/80 focus:ring-4 focus:outline-none focus:ring-[#050708]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
+                        <div className="pt-5">
+                        <button onClick={sendRequest} type="button" className="w-full text-white bg-[#050708] hover:bg-[#050708]/80 focus:ring-4 focus:outline-none focus:ring-[#050708]/50 font-medium rounded-lg text-sm px-5 py-2.5 text-center me-2 mb-2">
                         {type === "signup" ? "Sign Up" : "Sign in"}
                         </button>
+                        </div>
                         </div>
                        
                 </div>
