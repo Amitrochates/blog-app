@@ -43,7 +43,7 @@ blogRoute.post('/', async (c) => {
     const blog = await prisma.blog.create({
         data: {
             title: body.title,
-            body: body.title,
+            body: body.body,
             authorId: authorId
         }
     })
@@ -79,7 +79,21 @@ blogRoute.post('/', async (c) => {
       datasourceUrl: c.env.DATABASE_URL,
   }).$extends(withAccelerate())
 
-    const blogs = await prisma.blog.findMany();
+    const blogs = await prisma.blog.findMany(
+      {
+        select:{
+          title: true,
+          body: true,
+          createdAt: true,
+          id: true,
+          author: {
+            select: {
+            name: true
+          }
+          }
+        }
+      }
+    );
     return c.json(blogs);
   })
   
@@ -96,6 +110,18 @@ blogRoute.post('/', async (c) => {
     try {const blog = await prisma.blog.findFirst({
             where:{
             id: id
+            },
+            select: {
+              title: true,
+              body: true,
+              createdAt: true,
+              id: true,
+              author: {
+                select:{
+                  name: true
+                }
+                
+              }
             }
         })
         return c.json({
