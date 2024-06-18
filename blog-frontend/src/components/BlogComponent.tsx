@@ -1,15 +1,17 @@
 import { Avatar } from "./Avatar";
-
+import { Link } from "react-router-dom";
+import moment from "moment";
 type Blogprops = {
-  
+    id: string;
     author: string;
     title: string;
     content: string;
     publishDate: string;
 }
-export const BlogComponent = ({author, title, content, publishDate }: Blogprops) => {
-    return <div className="border-b p-4 border-slate-200 pb-4">
-
+export const BlogComponent = ({author, title, content, publishDate, id }: Blogprops) => {
+    return <Link to={`/blog/${id}`}>
+    
+    <div className="border-b p-4 border-slate-200 pb-4 cursor-pointer">
         <div className="flex">
             <div className=" flex justify-center flex-col">
                 <Avatar name={author}/>
@@ -18,7 +20,7 @@ export const BlogComponent = ({author, title, content, publishDate }: Blogprops)
                 {author}
             </div>
             <div className="px-5 text-gray-500 text-sm flex justify-center flex-col">
-                {publishDate}
+                {moment(publishDate).format('DD MMMM YYYY')}
             </div>
         </div>
         <div>
@@ -39,5 +41,7 @@ export const BlogComponent = ({author, title, content, publishDate }: Blogprops)
         </div>
        
         
+
     </div>
+    </Link>
 }
